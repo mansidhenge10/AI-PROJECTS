@@ -1,0 +1,68 @@
+{
+    "project": "Code Auto Reviewer",
+    "review_status": "COMPLETE",
+    "summary": {
+        "overall_score": 60,
+        "total_issues": 6,
+        "high_issues": 1,
+        "medium_issues": 2,
+        "low_issues": 3
+    },
+    "category_scores": {
+        "SECURITY": 85,
+        "BUG RISK": 84,
+        "BEST PRACTICE": 91,
+        "MAINTAINABILITY": 100
+    },
+    "findings": [
+        {
+            "category": "SECURITY",
+            "severity": "HIGH",
+            "line": 8,
+            "title": "Dangerous eval() usage",
+            "message": "eval() can execute arbitrary code and may create a serious security risk.",
+            "suggestion": "Avoid eval() and use safer alternatives such as explicit parsing or controlled mappings."
+        },
+        {
+            "category": "BUG RISK",
+            "severity": "MEDIUM",
+            "line": 6,
+            "title": "Unsafe dictionary access",
+            "message": "user[\"name\"] may raise a KeyError if the key does not exist.",
+            "suggestion": "Consider using user.get(\"name\") or checking whether the key exists first."
+        },
+        {
+            "category": "BUG RISK",
+            "severity": "MEDIUM",
+            "line": 8,
+            "title": "Unsafe dictionary access",
+            "message": "user[\"expression\"] may raise a KeyError if the key does not exist.",
+            "suggestion": "Consider using user.get(\"expression\") or checking whether the key exists first."
+        },
+        {
+            "category": "BEST PRACTICE",
+            "severity": "LOW",
+            "line": 2,
+            "title": "Missing type hints",
+            "message": "Function 'get_user' has parameters without type hints: user.",
+            "suggestion": "Add type hints to make the function contract clearer and improve readability."
+        },
+        {
+            "category": "BEST PRACTICE",
+            "severity": "LOW",
+            "line": 2,
+            "title": "Missing return type hint",
+            "message": "Function 'get_user' does not specify a return type.",
+            "suggestion": "Add a return type annotation to make the function's expected output explicit."
+        },
+        {
+            "category": "BEST PRACTICE",
+            "severity": "LOW",
+            "line": 4,
+            "title": "print() used in application code",
+            "message": "print() is commonly used for debugging and basic output, but logging is usually better for production applications.",
+            "suggestion": "Consider using the Python logging module instead of print()."
+        }
+    ],
+    "code": "\ndef get_user(user):\n\n    print(\"Searching for user\")\n\n    name = user[\"name\"]\n\n    result = eval(user[\"expression\"])\n\n    return name\n"
+}
