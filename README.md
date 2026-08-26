@@ -190,7 +190,7 @@ The goal of this project is to combine **traditional NLP techniques with modern 
 # 📁 Repository Structure
 
 ```text
-AI-Engineering-Projects/
+AI_PROJECT/
 │
 ├── 01-Auto-Code-Reviewer/
 │   │
