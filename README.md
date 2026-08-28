@@ -45,7 +45,7 @@ These projects represent my progression from **traditional NLP and Machine Learn
 
 # 📂 Projects
 
-| #        | Project                           | Description                                                                                                                                            | Key Technologies                             |
+| sr.no       | Project                           | Description                                                                                                                                            | Key Technologies                             |
 | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
 | 🧑‍💻 01 | **Auto Code Reviewer**            | An AI-powered application that automatically analyzes source code, identifies potential issues, and provides explanations and improvement suggestions. | Python, LLM, Hugging Face, NLP, FastAPI      |
 | 🤖 02    | **AI Interview Mistake Analyzer** | An AI-powered application that analyzes interview answers and provides feedback on mistakes, missing concepts, and areas for improvement.              | Python, NLP, NLTK, TF-IDF, Scikit-learn, LLM |
@@ -365,8 +365,4 @@ This repository currently contains **2 AI Engineering projects** and will be exp
 
 ---
 
-## ⭐ More Projects Coming Soon...
 
-New AI, Machine Learning, NLP, Generative AI, and AI Engineering projects will be added as I continue learning and building.
-
-**Thanks for visiting! 🤖🐍🚀**
