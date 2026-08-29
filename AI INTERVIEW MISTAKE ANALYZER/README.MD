@@ -696,19 +696,4 @@ Through this project, the following concepts are demonstrated:
 
 ---
 
-## 💼 Resume Description
 
-**AI Interview Mistake Analyzer | Python, NLP, Streamlit, Scikit-learn, Ollama, Llama 3.2**
-
-* Developed an AI-powered interview practice application that analyzes candidate responses using NLP and Llama 3.2.
-* Implemented TF-IDF similarity, concept coverage, relevance scoring, and answer-quality evaluation to identify weaknesses in interview answers.
-* Integrated a locally running Llama 3.2 model through Ollama to generate structured feedback, mistake explanations, improvement suggestions, and better sample answers.
-* Built an interactive Streamlit interface with randomized interview questions, progress tracking, answer analysis, question skipping, and multi-question interview sessions.
-
----
-
-## 👩‍💻 Author
-
-**Mansi Dhenge**
-
-AI Engineer | Python | Machine Learning | NLP | Generative AI
