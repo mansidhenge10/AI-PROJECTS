@@ -743,22 +743,9 @@ Possible future versions could include:
 
 The current version supports an end-to-end interview experience using **Text or Microphone input → Whisper Speech-to-Text → NLP Analysis → Llama 3.2 Feedback → Performance Evaluation**.
 
----
 
-# 👩‍💻 Author
 
-**Mansi Dhenge**
 
-AI Engineer / Machine Learning Enthusiast
-
-GitHub:
-https://github.com/mansidhenge10
-
----
-
-## ⭐ If you find this project useful
-
-Consider giving the repository a ⭐ on GitHub.
 
 ```
 
