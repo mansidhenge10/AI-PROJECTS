@@ -112,104 +112,654 @@ Suggestions & Explanation
 The goal of this project is to demonstrate how **Large Language Models can be integrated into practical developer tools** to automatically analyze source code and provide meaningful feedback.
 
 ---
-
 # 🤖 02. AI Interview Mistake Analyzer
 
-An **AI-powered interview analysis application** designed to help candidates improve their technical and HR interview performance.
+An **AI-powered interview preparation and answer analysis application** that helps candidates practice **technical and HR interviews** and receive intelligent feedback on their answers.
 
-The system analyzes a candidate's answer and compares it with expected concepts to identify missing concepts, relevance, and areas that can be improved.
+The application supports both **text and microphone-based answers**. Microphone responses are automatically converted into text using **Whisper**, after which the system evaluates the answer using **NLP techniques, TF-IDF, concept coverage, similarity analysis, and Llama 3.2-based AI feedback**.
 
-### ✨ Features
+The goal is to provide candidates with actionable feedback on **answer relevance, concept coverage, answer quality, missing concepts, and areas for improvement**.
 
-* Interview question selection
-* Technical and HR interview questions
-* Job-domain based questions
-* Text preprocessing
+---
+
+## ✨ Features
+
+### 🎯 Interview Practice
+
+* Job-domain based interview questions
+* Technical interview questions
+* HR interview questions
+* Random question selection
+* 10-question interview sessions
+* Question progress tracking
+* Skip question functionality
+* Start a new interview anytime
+
+### 📝 Multiple Answer Methods
+
+Candidates can choose how they want to answer each question:
+
+* 📝 **Text Answer**
+* 🎙️ **Microphone Answer**
+
+The selected answer method continues throughout the interview until the candidate chooses to change it.
+
+### 🎙️ Speech-to-Text
+
+Microphone answers are processed using **OpenAI Whisper locally**.
+
+Workflow:
+
+```text
+Microphone
+    ↓
+Audio Recording
+    ↓
+Whisper Speech-to-Text
+    ↓
+Transcribed Answer
+    ↓
+Answer Analysis
+```
+
+Whisper runs locally, so the project does not require an OpenAI API key for speech-to-text.
+
+### 🧠 NLP Analysis
+
+The application performs several NLP operations:
+
+* Text cleaning
 * Tokenization
 * Stopword removal
 * Lemmatization
 * TF-IDF analysis
-* Concept extraction
-* Answer similarity
+* Cosine similarity
+* Expected concept extraction
+* Concept coverage analysis
 * Missing concept detection
-* AI/LLM-based feedback
-* Personalized improvement suggestions
 
-### 🛠️ Technologies Used
+### 📊 Answer Evaluation
 
-```text
-Python
-NLTK
-Scikit-learn
-NLP
-TF-IDF
-Cosine Similarity
-Large Language Models
-Generative AI
-```
+Each submitted answer is evaluated using:
 
-### 🔄 Project Workflow
+* **Relevance Score**
+* **Concept Coverage Score**
+* **Answer Quality Score**
+* Covered concepts
+* Missing concepts
+* Answer classification
 
-```text
-Interview Question
-        │
-        ▼
-Candidate Answer
-        │
-        ▼
-Text Preprocessing
-        │
-        ▼
-Tokenization & Cleaning
-        │
-        ▼
-TF-IDF Analysis
-        │
-        ▼
-Concept Extraction
-        │
-        ▼
-Similarity Analysis
-        │
-        ▼
-AI / LLM Layer
-        │
-        ▼
-Mistake Detection
-        │
-        ▼
-Personalized Feedback
-```
+### 🤖 Llama 3.2 AI Feedback
 
-### 🎯 Goal
+The project uses **Llama 3.2** to provide AI-powered feedback on the candidate's answer.
 
-The goal of this project is to combine **traditional NLP techniques with modern LLM capabilities** to create an intelligent interview preparation tool.
+The LLM analyzes the answer and provides feedback about:
+
+* Answer quality
+* Technical correctness
+* Missing information
+* Explanation quality
+* Areas for improvement
+
+### 💡 Personalized Suggestions
+
+The system generates improvement suggestions based on the concepts missing from the candidate's answer.
+
+### 📈 Interview Summary
+
+After completing the interview, the application displays:
+
+* Total questions
+* Number of answered questions
+* Number of skipped questions
+* Average relevance score
+* Average concept coverage
+* Average answer quality
+* Answer-quality performance graph
+* Overall interview performance
 
 ---
 
-# 📁 Repository Structure
+# 🔄 Complete Project Workflow
 
 ```text
-AI_PROJECT/
+                    ┌──────────────────────┐
+                    │   Start Interview    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Select Job Domain    │
+                    │ & Interview Type     │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   Interview Question │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                  ┌───────────────────────────┐
+                  │ Choose Answer Method      │
+                  │                           │
+                  │ 📝 Text   │   🎙️ Mic     │
+                  └────────────┬──────────────┘
+                               │
+                 ┌─────────────┴─────────────┐
+                 │                           │
+                 ▼                           ▼
+        ┌────────────────┐          ┌────────────────┐
+        │   Text Answer  │          │ Audio Recording│
+        └───────┬────────┘          └───────┬────────┘
+                │                           │
+                │                           ▼
+                │                  ┌─────────────────┐
+                │                  │ Whisper Speech  │
+                │                  │   to Text       │
+                │                  └────────┬────────┘
+                │                           │
+                └─────────────┬─────────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Text Preprocessing  │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ TF-IDF Analysis     │
+                   │ & Similarity        │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Concept Coverage    │
+                   │ & Missing Concepts  │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Answer Quality      │
+                   │ Evaluation          │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Llama 3.2 AI        │
+                   │ Feedback             │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Improvement         │
+                   │ Suggestions         │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Next Question       │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ Interview Summary   │
+                   │ & Performance Graph│
+                   └─────────────────────┘
+```
+
+---
+
+# 🧠 Answer Evaluation Pipeline
+
+The project combines **traditional NLP techniques with Generative AI**.
+
+```text
+Candidate Answer
+       │
+       ▼
+Text Cleaning
+       │
+       ▼
+Tokenization
+       │
+       ▼
+Stopword Removal
+       │
+       ▼
+Lemmatization
+       │
+       ▼
+TF-IDF
+       │
+       ▼
+Similarity Analysis
+       │
+       ▼
+Concept Coverage
+       │
+       ├──────────────► Covered Concepts
+       │
+       └──────────────► Missing Concepts
+                              │
+                              ▼
+                       Llama 3.2 Analysis
+                              │
+                              ▼
+                     AI-Powered Feedback
+```
+
+---
+
+# 📊 Scoring System
+
+The application evaluates answers using three major metrics.
+
+### Relevance Score
+
+Measures how closely the candidate's answer relates to the expected concepts of the question.
+
+### Concept Coverage
+
+Measures how many important concepts from the expected answer were covered.
+
+### Answer Quality
+
+Combines the evaluation results to provide an overall assessment of the candidate's answer.
+
+The application then classifies the answer based on its quality score.
+
+```text
+80%+  → Excellent
+60–79% → Good
+40–59% → Average
+Below 40% → Needs Improvement
+```
+
+---
+
+# 🎙️ Text & Voice Interview Architecture
+
+One of the main features of this project is supporting two different input methods.
+
+### Text Mode
+
+```text
+Question
+   ↓
+Candidate types answer
+   ↓
+Submit
+   ↓
+NLP Analysis
+   ↓
+Llama 3.2 Analysis
+   ↓
+Feedback
+   ↓
+Next Question
+```
+
+### Microphone Mode
+
+```text
+Question
+   ↓
+Candidate speaks
+   ↓
+Audio Recording
+   ↓
+Whisper
+   ↓
+Speech-to-Text
+   ↓
+Transcribed Answer
+   ↓
+NLP Analysis
+   ↓
+Llama 3.2 Analysis
+   ↓
+Feedback
+   ↓
+Next Question
+```
+
+Both methods use the **same answer-analysis pipeline** after the answer becomes text.
+
+---
+
+# 🛠️ Technologies Used
+
+## 🐍 Programming
+
+* Python 3
+
+## 🧠 Natural Language Processing
+
+* NLTK
+* Scikit-learn
+* TF-IDF
+* Cosine Similarity
+* Tokenization
+* Stopword Removal
+* Lemmatization
+* Text Processing
+
+## 🤖 Generative AI
+
+* Llama 3.2
+* Large Language Models
+* Prompt Engineering
+* Generative AI
+
+## 🎙️ Speech Processing
+
+* OpenAI Whisper
+* Speech-to-Text
+* Local audio processing
+
+## 🌐 Web Application
+
+* Streamlit
+
+## 📊 Data Processing
+
+* Pandas
+* CSV
+
+## 🔧 Development Tools
+
+* Git
+* GitHub
+* VS Code
+* Python Virtual Environment
+
+---
+
+# 📁 Project Structure
+
+```text
+AI INTERVIEW MISTAKE ANALYZER/
 │
-├── 01-Auto-Code-Reviewer/
-│   │
-│   ├── src/
-│   ├── tests/
-│   ├── app.py
-│   ├── requirements.txt
-│   └── README.md
+├── data/
+│   └── interview_questions.csv
 │
-├── 02-AI-Interview-Mistake-Analyzer/
-│   │
-│   ├── data/
-│   ├── src/
-│   ├── ui/
-│   ├── app.py
-│   ├── requirements.txt
-│   └── README.md
+├── src/
+│   ├── __init__.py
+│   ├── text_processor.py
+│   ├── tfidf_analyzer.py
+│   ├── evaluation.py
+│   ├── mistake_analyzer.py
+│   └── llm_analyzer.py
 │
-└── README.md
+├── ui/
+│   └── app.py
+│
+├── app.py
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+> `venv/` should remain local and should **not** be uploaded to GitHub.
+
+---
+
+# 🚀 Installation
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/mansidhenge10/AI-PROJECTS.git
+```
+
+Navigate to the project:
+
+```bash
+cd AI-PROJECTS
+cd "AI INTERVIEW MISTAKE ANALYZER"
+```
+
+---
+
+## 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+Activate it on Windows PowerShell:
+
+```powershell
+venv\Scripts\Activate.ps1
+```
+
+---
+
+## 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+For speech-to-text support:
+
+```bash
+pip install openai-whisper
+```
+
+Whisper also requires **FFmpeg** to process audio files.
+
+Verify Whisper:
+
+```bash
+python -c "import whisper; print('Whisper installed successfully')"
+```
+
+Verify FFmpeg:
+
+```bash
+ffmpeg -version
+```
+
+---
+
+# ▶️ Run the Application
+
+From the project root:
+
+```bash
+python -m streamlit run ui/app.py
+```
+
+Streamlit will provide a local URL such as:
+
+```text
+http://localhost:8501
+```
+
+Open the URL in your browser.
+
+---
+
+# 🎯 How to Use
+
+### Step 1 — Start Interview
+
+Select:
+
+* Job Domain
+* Interview Type
+
+Then click:
+
+```text
+🚀 Start New Interview
+```
+
+### Step 2 — Select Answer Method
+
+Choose:
+
+```text
+📝 Answer with Text
+```
+
+or
+
+```text
+🎙️ Answer with Microphone
+```
+
+### Step 3 — Answer the Question
+
+For text mode, type your answer.
+
+For microphone mode, record your answer and allow Whisper to convert your speech into text.
+
+### Step 4 — Submit
+
+The system analyzes the answer using the NLP and AI pipeline.
+
+### Step 5 — Review Feedback
+
+You receive:
+
+* Relevance score
+* Concept coverage
+* Answer quality
+* Covered concepts
+* Missing concepts
+* NLP feedback
+* Improvement suggestions
+* Llama 3.2 feedback
+
+### Step 6 — Continue
+
+Click:
+
+```text
+➡️ Next Question
+```
+
+and continue the interview until all questions are completed.
+
+### Step 7 — View Final Results
+
+At the end, the application displays an interview summary and performance graph.
+
+---
+
+# 📌 Example
+
+### Interview Question
+
+```text
+What is overfitting and how can you prevent it?
+```
+
+### Candidate Answer
+
+```text
+Overfitting happens when a machine learning model learns
+the training data too closely and performs poorly on
+unseen data. It can be reduced using regularization,
+cross-validation, dropout, and more training data.
+```
+
+The system can identify concepts such as:
+
+```text
+✓ Training data
+✓ Unseen data
+✓ Regularization
+✓ Cross-validation
+✓ Dropout
+
+```
+
+and then generate AI-powered feedback using Llama 3.2.
+
+---
+
+# 🎯 Project Goal
+
+The goal of this project is to combine **traditional Natural Language Processing, Machine Learning techniques, Speech-to-Text, and Generative AI** to build an intelligent interview preparation system.
+
+Instead of only checking whether an answer was submitted, the application attempts to understand:
+
+* What concepts the candidate mentioned
+* What important concepts were missing
+* How relevant the answer was
+* How complete the answer was
+* How the candidate can improve
+
+---
+
+# 💡 Key Learning Outcomes
+
+Through this project, the following concepts were implemented:
+
+* Building an end-to-end AI application
+* NLP text preprocessing
+* TF-IDF vectorization
+* Similarity analysis
+* Concept extraction
+* Rule-based evaluation
+* Speech-to-text integration
+* Local Whisper model integration
+* LLM integration
+* Prompt engineering
+* Streamlit application development
+* Session-state management
+* Interactive interview workflows
+* Performance visualization
+* Git and GitHub project management
+
+---
+
+# 🔮 Future Enhancements
+
+Possible future versions could include:
+
+* 📅 Interview history
+* 💾 Persistent performance database
+* 📈 Long-term performance tracking
+* 🎯 Topic-wise weakness analysis
+* 🧠 Adaptive question difficulty
+* 🎤 Voice-confidence analysis
+* ⏱️ Interview time tracking
+* 👁️ Facial-expression analysis
+* 📊 Advanced performance dashboard
+* 📄 Resume-based interview questions
+* 🎯 Personalized interview preparation plans
+
+---
+
+# 🏆 Project Status
+
+```text
+✅ Project Completed — Version 1.0
+```
+
+The current version supports an end-to-end interview experience using **Text or Microphone input → Whisper Speech-to-Text → NLP Analysis → Llama 3.2 Feedback → Performance Evaluation**.
+
+---
+
+# 👩‍💻 Author
+
+**Mansi Dhenge**
+
+AI Engineer / Machine Learning Enthusiast
+
+GitHub:
+https://github.com/mansidhenge10
+
+---
+
+## ⭐ If you find this project useful
+
+Consider giving the repository a ⭐ on GitHub.
+
 ```
 
 ---
