@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-import random
 import tempfile
+import shutil
 
 
 # ============================================================
@@ -40,6 +40,17 @@ from src.llm_analyzer import analyze_with_llm
 
 
 # ============================================================
+# WHISPER
+# ============================================================
+
+try:
+    import whisper
+    WHISPER_AVAILABLE = True
+except ImportError:
+    WHISPER_AVAILABLE = False
+
+
+# ============================================================
 # PAGE CONFIGURATION
 # ============================================================
 
@@ -51,40 +62,92 @@ st.set_page_config(
 
 
 # ============================================================
-# SESSION STATE INITIALIZATION
+# LOAD WHISPER MODEL
+# ============================================================
+
+@st.cache_resource
+def load_whisper_model():
+
+    if not WHISPER_AVAILABLE:
+        return None
+
+    try:
+
+        model = whisper.load_model("base")
+
+        return model
+
+    except Exception as e:
+
+        st.error(
+            f"Could not load Whisper model: {e}"
+        )
+
+        return None
+
+
+# ============================================================
+# SESSION STATE
 # ============================================================
 
 DEFAULTS = {
+
     "current_question": None,
+
     "question_number": 0,
+
     "total_questions": 10,
+
     "asked_questions": [],
+
     "interview_started": False,
 
-    # Answer method
     "answer_method": None,
 
-    # Analysis
     "analysis_done": False,
+
     "llm_feedback": "",
 
-    # Statistics
     "answered_questions": 0,
+
     "skipped_questions": 0,
 
-    # Scores
     "relevance_scores": [],
+
     "coverage_scores": [],
+
     "quality_scores": [],
 
-    # Final summary
     "interview_finished": False,
+
+    "submitted_answer": "",
+
+    "relevance_score": 0,
+
+    "coverage_score": 0,
+
+    "answer_quality": 0,
+
+    "covered": [],
+
+    "missing": [],
+
+    "quality_label": "",
+
+    "feedback": "",
+
+    "suggestions": [],
+
+    "transcribed_text": "",
+
+    "audio_processed": False
 }
 
 
 for key, value in DEFAULTS.items():
 
     if key not in st.session_state:
+
         st.session_state[key] = value
 
 
@@ -130,7 +193,7 @@ st.divider()
 
 
 # ============================================================
-# HELPER: RESET INTERVIEW
+# RESET INTERVIEW
 # ============================================================
 
 def reset_interview():
@@ -161,9 +224,31 @@ def reset_interview():
 
     st.session_state["interview_finished"] = False
 
+    st.session_state["submitted_answer"] = ""
+
+    st.session_state["relevance_score"] = 0
+
+    st.session_state["coverage_score"] = 0
+
+    st.session_state["answer_quality"] = 0
+
+    st.session_state["covered"] = []
+
+    st.session_state["missing"] = []
+
+    st.session_state["quality_label"] = ""
+
+    st.session_state["feedback"] = ""
+
+    st.session_state["suggestions"] = []
+
+    st.session_state["transcribed_text"] = ""
+
+    st.session_state["audio_processed"] = False
+
 
 # ============================================================
-# HELPER: RESET QUESTION
+# RESET CURRENT QUESTION
 # ============================================================
 
 def reset_question():
@@ -172,9 +257,15 @@ def reset_question():
 
     st.session_state["llm_feedback"] = ""
 
+    st.session_state["submitted_answer"] = ""
+
+    st.session_state["transcribed_text"] = ""
+
+    st.session_state["audio_processed"] = False
+
 
 # ============================================================
-# GET RANDOM QUESTION
+# GET NEXT QUESTION
 # ============================================================
 
 def get_next_question():
@@ -190,10 +281,6 @@ def get_next_question():
         return None
 
 
-    # --------------------------------------------------------
-    # Questions not asked yet
-    # --------------------------------------------------------
-
     available_questions = filtered_questions[
         ~filtered_questions.index.isin(
             st.session_state["asked_questions"]
@@ -201,28 +288,21 @@ def get_next_question():
     ]
 
 
-    # --------------------------------------------------------
-    # If all questions used
-    # --------------------------------------------------------
-
     if available_questions.empty:
 
         available_questions = filtered_questions
 
 
-    # --------------------------------------------------------
-    # Random question
-    # --------------------------------------------------------
-
     question = available_questions.sample(
         n=1
     ).iloc[0]
+
 
     return question
 
 
 # ============================================================
-# START NEXT QUESTION
+# MOVE TO NEXT QUESTION
 # ============================================================
 
 def move_to_next_question():
@@ -242,6 +322,7 @@ def move_to_next_question():
 
     next_question = get_next_question()
 
+
     if next_question is None:
 
         st.error(
@@ -259,7 +340,298 @@ def move_to_next_question():
 
     st.session_state["question_number"] += 1
 
+    st.session_state["answer_method"] = None
+
     reset_question()
+
+
+# ============================================================
+# SKIP QUESTION
+# ============================================================
+
+def skip_current_question():
+
+    st.session_state["skipped_questions"] += 1
+
+
+    if (
+        st.session_state["question_number"]
+        <
+        st.session_state["total_questions"]
+    ):
+
+        move_to_next_question()
+
+    else:
+
+        st.session_state["interview_finished"] = True
+
+        st.session_state["current_question"] = None
+
+
+# ============================================================
+# TRANSCRIBE AUDIO
+# ============================================================
+
+def transcribe_audio(audio_value):
+
+    if not WHISPER_AVAILABLE:
+
+        return None, (
+            "Whisper is not installed in the current virtual environment."
+        )
+
+
+    # Check FFmpeg
+
+    ffmpeg_path = shutil.which("ffmpeg")
+
+
+    if ffmpeg_path is None:
+
+        return None, (
+            "FFmpeg was not found. "
+            "Please make sure FFmpeg is installed and "
+            "available in PATH."
+        )
+
+
+    try:
+
+        # Create temporary WAV file
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".wav"
+        ) as temp_audio:
+
+            temp_audio.write(
+                audio_value.getvalue()
+            )
+
+            temp_audio_path = temp_audio.name
+
+
+        # Load Whisper
+
+        model = load_whisper_model()
+
+
+        if model is None:
+
+            return None, (
+                "Whisper model could not be loaded."
+            )
+
+
+        # Transcribe
+
+        result = model.transcribe(
+            temp_audio_path,
+            fp16=False
+        )
+
+
+        text = result.get(
+            "text",
+            ""
+        ).strip()
+
+
+        # Delete temporary file
+
+        try:
+
+            os.remove(
+                temp_audio_path
+            )
+
+        except Exception:
+
+            pass
+
+
+        if not text:
+
+            return None, (
+                "Whisper could not detect any speech."
+            )
+
+
+        return text, None
+
+
+    except Exception as e:
+
+        try:
+
+            os.remove(
+                temp_audio_path
+            )
+
+        except Exception:
+
+            pass
+
+
+        return None, (
+            f"Speech-to-text failed: {str(e)}"
+        )
+
+
+# ============================================================
+# ANALYZE ANSWER
+# ============================================================
+
+def analyze_answer(candidate_answer, question):
+
+    expected_concepts = str(
+        question["expected_concepts"]
+    ).split(";")
+
+
+    expected_concepts = [
+
+        concept.strip().lower()
+
+        for concept in expected_concepts
+
+        if concept.strip()
+
+    ]
+
+
+    # ========================================================
+    # TF-IDF SIMILARITY
+    # ========================================================
+
+    similarity_score = calculate_similarity(
+        expected_concepts,
+        candidate_answer
+    )
+
+
+    # ========================================================
+    # RELEVANCE
+    # ========================================================
+
+    relevance_score = calculate_relevance_score(
+        similarity_score
+    )
+
+
+    # ========================================================
+    # CONCEPT COVERAGE
+    # ========================================================
+
+    coverage_score, covered, missing = (
+        calculate_concept_coverage(
+            expected_concepts,
+            candidate_answer
+        )
+    )
+
+
+    # ========================================================
+    # ANSWER QUALITY
+    # ========================================================
+
+    answer_quality = calculate_answer_quality(
+        relevance_score,
+        coverage_score
+    )
+
+
+    # ========================================================
+    # MISTAKE ANALYZER
+    # ========================================================
+
+    quality_label = analyze_answer_quality(
+        answer_quality
+    )
+
+
+    feedback = generate_feedback(
+        missing
+    )
+
+
+    suggestions = generate_improvement_suggestions(
+        missing
+    )
+
+
+    # ========================================================
+    # LLAMA
+    # ========================================================
+
+    llm_feedback = ""
+
+
+    with st.spinner(
+        "🤖 Llama 3.2 is analyzing your answer..."
+    ):
+
+        try:
+
+            llm_feedback = analyze_with_llm(
+                question["question"],
+                candidate_answer
+            )
+
+        except Exception as e:
+
+            llm_feedback = (
+                "Llama 3.2 analysis could not "
+                "be completed.\n\n"
+                f"Error: {str(e)}"
+            )
+
+
+    # ========================================================
+    # SAVE RESULTS
+    # ========================================================
+
+    st.session_state["analysis_done"] = True
+
+    st.session_state["submitted_answer"] = candidate_answer
+
+    st.session_state["relevance_score"] = relevance_score
+
+    st.session_state["coverage_score"] = coverage_score
+
+    st.session_state["answer_quality"] = answer_quality
+
+    st.session_state["covered"] = covered
+
+    st.session_state["missing"] = missing
+
+    st.session_state["quality_label"] = quality_label
+
+    st.session_state["feedback"] = feedback
+
+    st.session_state["suggestions"] = suggestions
+
+    st.session_state["llm_feedback"] = llm_feedback
+
+
+    # ========================================================
+    # UPDATE STATISTICS
+    # ========================================================
+
+    st.session_state["answered_questions"] += 1
+
+    st.session_state["relevance_scores"].append(
+        relevance_score
+    )
+
+    st.session_state["coverage_scores"].append(
+        coverage_score
+    )
+
+    st.session_state["quality_scores"].append(
+        answer_quality
+    )
 
 
 # ============================================================
@@ -273,9 +645,9 @@ with st.sidebar:
     )
 
 
-    # --------------------------------------------------------
-    # Job Domain
-    # --------------------------------------------------------
+    # ========================================================
+    # JOB DOMAIN
+    # ========================================================
 
     job_domain = st.selectbox(
         "Select Job Domain",
@@ -289,9 +661,9 @@ with st.sidebar:
     )
 
 
-    # --------------------------------------------------------
-    # Interview Type
-    # --------------------------------------------------------
+    # ========================================================
+    # INTERVIEW TYPE
+    # ========================================================
 
     interview_type = st.selectbox(
         "Select Interview Type",
@@ -335,10 +707,6 @@ with st.sidebar:
         )
 
 
-    # --------------------------------------------------------
-    # Current Answer Method
-    # --------------------------------------------------------
-
     if st.session_state["answer_method"]:
 
         st.divider()
@@ -346,6 +714,7 @@ with st.sidebar:
         st.write(
             "**Answer Method:**"
         )
+
 
         if st.session_state["answer_method"] == "Text":
 
@@ -374,19 +743,22 @@ if (
         "🎯 Start Your Interview"
     )
 
+
     st.write(
         "Choose your job domain and interview type "
         "from the sidebar."
     )
+
 
     st.write(
         f"**Number of Questions:** "
         f"{st.session_state['total_questions']}"
     )
 
+
     st.write(
-        "You will choose Text or Microphone after "
-        "starting the interview."
+        "For every question you can choose Text or "
+        "Microphone."
     )
 
 
@@ -412,9 +784,8 @@ if (
                 "Job Domain and Interview Type."
             )
 
-        else:
 
-            # Reset interview statistics
+        else:
 
             st.session_state["asked_questions"] = []
 
@@ -440,8 +811,12 @@ if (
 
             st.session_state["interview_started"] = True
 
+            st.session_state["submitted_answer"] = ""
 
-            # Get first question
+            st.session_state["transcribed_text"] = ""
+
+            st.session_state["audio_processed"] = False
+
 
             first_question = get_next_question()
 
@@ -452,17 +827,21 @@ if (
                     "current_question"
                 ] = first_question
 
+
                 st.session_state[
                     "asked_questions"
                 ].append(
                     first_question.name
                 )
 
+
                 st.session_state[
                     "question_number"
                 ] = 1
 
+
                 st.rerun()
+
 
             else:
 
@@ -496,11 +875,12 @@ if (
         st.rerun()
 
 
+    st.divider()
+
+
     # ========================================================
     # PROGRESS
     # ========================================================
-
-    st.divider()
 
     st.info(
         f"🔢 Question "
@@ -510,7 +890,7 @@ if (
 
 
     # ========================================================
-    # CURRENT QUESTION
+    # QUESTION
     # ========================================================
 
     question = st.session_state[
@@ -520,23 +900,21 @@ if (
 
     if question is not None:
 
-
-        # ====================================================
-        # QUESTION
-        # ====================================================
-
         st.subheader(
             "📝 Interview Question"
         )
+
 
         st.write(
             f"### {question['question']}"
         )
 
+
         st.write(
             "**Category:**",
             question["category"]
         )
+
 
         st.write(
             "**Difficulty:**",
@@ -548,7 +926,7 @@ if (
 
 
         # ====================================================
-        # ANSWER METHOD SELECTION
+        # ANSWER METHOD
         # ====================================================
 
         if st.session_state["answer_method"] is None:
@@ -556,6 +934,7 @@ if (
             st.subheader(
                 "🎤 Choose Answer Method"
             )
+
 
             st.write(
                 "How would you like to answer this question?"
@@ -593,60 +972,29 @@ if (
                     st.rerun()
 
 
-            # ------------------------------------------------
-            # SKIP BEFORE ANSWER
-            # ------------------------------------------------
-
             st.write("")
+
 
             if st.button(
                 "⏭️ Skip Question",
                 use_container_width=True
             ):
 
-                if (
-                    st.session_state["question_number"]
-                    <
-                    st.session_state["total_questions"]
-                ):
+                skip_current_question()
 
-                    st.session_state[
-                        "skipped_questions"
-                    ] += 1
-
-                    move_to_next_question()
-
-                    st.rerun()
-
-                else:
-
-                    st.session_state[
-                        "skipped_questions"
-                    ] += 1
-
-                    st.session_state[
-                        "interview_finished"
-                    ] = True
-
-                    st.session_state[
-                        "current_question"
-                    ] = None
-
-                    st.rerun()
+                st.rerun()
 
 
         # ====================================================
-        # TEXT ANSWER MODE
+        # TEXT MODE
         # ====================================================
 
-        elif (
-            st.session_state["answer_method"]
-            == "Text"
-        ):
+        elif st.session_state["answer_method"] == "Text":
 
             st.subheader(
                 "📝 Text Answer"
             )
+
 
             st.caption(
                 "Type your answer below."
@@ -675,10 +1023,6 @@ if (
             col1, col2 = st.columns(2)
 
 
-            # ------------------------------------------------
-            # SUBMIT
-            # ------------------------------------------------
-
             with col1:
 
                 submit_clicked = st.button(
@@ -686,10 +1030,6 @@ if (
                     use_container_width=True
                 )
 
-
-            # ------------------------------------------------
-            # SKIP
-            # ------------------------------------------------
 
             with col2:
 
@@ -699,50 +1039,16 @@ if (
                 )
 
 
-            # ------------------------------------------------
-            # SKIP
-            # ------------------------------------------------
-
             if skip_clicked:
 
-                if (
-                    st.session_state["question_number"]
-                    <
-                    st.session_state["total_questions"]
-                ):
+                skip_current_question()
 
-                    st.session_state[
-                        "skipped_questions"
-                    ] += 1
+                st.rerun()
 
-                    move_to_next_question()
-
-                    st.rerun()
-
-                else:
-
-                    st.session_state[
-                        "skipped_questions"
-                    ] += 1
-
-                    st.session_state[
-                        "interview_finished"
-                    ] = True
-
-                    st.session_state[
-                        "current_question"
-                    ] = None
-
-                    st.rerun()
-
-
-            # ------------------------------------------------
-            # SUBMIT
-            # ------------------------------------------------
 
             if submit_clicked:
 
-                if candidate_answer.strip() == "":
+                if not candidate_answer.strip():
 
                     st.warning(
                         "⚠️ Please enter your answer first."
@@ -750,200 +1056,39 @@ if (
 
                 else:
 
-                    expected_concepts = str(
-                        question["expected_concepts"]
-                    ).split(";")
-
-                    expected_concepts = [
-                        concept.strip().lower()
-                        for concept in expected_concepts
-                        if concept.strip()
-                    ]
-
-
-                    # ========================================
-                    # TF-IDF
-                    # ========================================
-
-                    similarity_score = calculate_similarity(
-                        expected_concepts,
-                        candidate_answer
+                    analyze_answer(
+                        candidate_answer,
+                        question
                     )
-
-
-                    # ========================================
-                    # RELEVANCE
-                    # ========================================
-
-                    relevance_score = (
-                        calculate_relevance_score(
-                            similarity_score
-                        )
-                    )
-
-
-                    # ========================================
-                    # CONCEPT COVERAGE
-                    # ========================================
-
-                    coverage_score, covered, missing = (
-                        calculate_concept_coverage(
-                            expected_concepts,
-                            candidate_answer
-                        )
-                    )
-
-
-                    # ========================================
-                    # ANSWER QUALITY
-                    # ========================================
-
-                    answer_quality = (
-                        calculate_answer_quality(
-                            relevance_score,
-                            coverage_score
-                        )
-                    )
-
-
-                    # ========================================
-                    # MISTAKE ANALYZER
-                    # ========================================
-
-                    quality_label = (
-                        analyze_answer_quality(
-                            answer_quality
-                        )
-                    )
-
-
-                    feedback = generate_feedback(
-                        missing
-                    )
-
-
-                    suggestions = (
-                        generate_improvement_suggestions(
-                            missing
-                        )
-                    )
-
-
-                    # ========================================
-                    # LLAMA
-                    # ========================================
-
-                    llm_feedback = ""
-
-                    with st.spinner(
-                        "🤖 Llama 3.2 is analyzing your answer..."
-                    ):
-
-                        try:
-
-                            llm_feedback = analyze_with_llm(
-                                question["question"],
-                                candidate_answer
-                            )
-
-                        except Exception as e:
-
-                            llm_feedback = (
-                                "Llama 3.2 analysis could not "
-                                "be completed.\n\n"
-                                f"Error: {str(e)}"
-                            )
-
-
-                    # ========================================
-                    # SAVE RESULTS
-                    # ========================================
-
-                    st.session_state[
-                        "analysis_done"
-                    ] = True
-
-                    st.session_state[
-                        "submitted_answer"
-                    ] = candidate_answer
-
-                    st.session_state[
-                        "relevance_score"
-                    ] = relevance_score
-
-                    st.session_state[
-                        "coverage_score"
-                    ] = coverage_score
-
-                    st.session_state[
-                        "answer_quality"
-                    ] = answer_quality
-
-                    st.session_state[
-                        "covered"
-                    ] = covered
-
-                    st.session_state[
-                        "missing"
-                    ] = missing
-
-                    st.session_state[
-                        "quality_label"
-                    ] = quality_label
-
-                    st.session_state[
-                        "feedback"
-                    ] = feedback
-
-                    st.session_state[
-                        "suggestions"
-                    ] = suggestions
-
-                    st.session_state[
-                        "llm_feedback"
-                    ] = llm_feedback
-
-
-                    # Add statistics
-
-                    st.session_state[
-                        "answered_questions"
-                    ] += 1
-
-                    st.session_state[
-                        "relevance_scores"
-                    ].append(
-                        relevance_score
-                    )
-
-                    st.session_state[
-                        "coverage_scores"
-                    ].append(
-                        coverage_score
-                    )
-
-                    st.session_state[
-                        "quality_scores"
-                    ].append(
-                        answer_quality
-                    )
-
 
                     st.rerun()
+
+
+            st.write("")
+
+
+            if st.button(
+                "🔄 Change Answer Method",
+                use_container_width=True
+            ):
+
+                st.session_state[
+                    "answer_method"
+                ] = None
+
+                st.rerun()
 
 
         # ====================================================
         # MICROPHONE MODE
         # ====================================================
 
-        elif (
-            st.session_state["answer_method"]
-            == "Mic"
-        ):
+        elif st.session_state["answer_method"] == "Mic":
 
             st.subheader(
                 "🎙️ Microphone Answer"
             )
+
 
             st.caption(
                 "Click the microphone button and speak "
@@ -952,7 +1097,11 @@ if (
 
 
             audio_value = st.audio_input(
-                "🎤 Record your answer"
+                "🎤 Record your answer",
+                key=(
+                    f"audio_"
+                    f"{st.session_state['question_number']}"
+                )
             )
 
 
@@ -962,26 +1111,15 @@ if (
                     audio_value
                 )
 
+
                 st.success(
                     "🎙️ Audio recorded successfully."
                 )
 
+
                 st.info(
-                    "The recorded audio is ready. "
-                    "To convert speech into text automatically, "
-                    "connect a speech-to-text model such as "
-                    "Whisper."
-                )
-
-
-                # --------------------------------------------
-                # NOTE
-                # --------------------------------------------
-
-                st.warning(
-                    "⚠️ Microphone recording is enabled, "
-                    "but automatic speech-to-text conversion "
-                    "requires a speech recognition model."
+                    "Your audio will be converted to text "
+                    "using the local Whisper model."
                 )
 
 
@@ -993,70 +1131,102 @@ if (
 
             with col1:
 
-                if st.button(
+                submit_audio = st.button(
                     "📤 Submit Answer",
                     use_container_width=True
-                ):
-
-                    if audio_value is None:
-
-                        st.warning(
-                            "⚠️ Please record your answer first."
-                        )
-
-                    else:
-
-                        st.error(
-                            "🎙️ Speech-to-text is not connected yet. "
-                            "We need to add Whisper to convert your "
-                            "recording into text before analysis."
-                        )
+                )
 
 
             with col2:
 
-                if st.button(
+                skip_audio = st.button(
                     "⏭️ Skip Question",
                     use_container_width=True
-                ):
+                )
 
-                    if (
-                        st.session_state["question_number"]
-                        <
-                        st.session_state["total_questions"]
+
+            # =================================================
+            # SKIP
+            # =================================================
+
+            if skip_audio:
+
+                skip_current_question()
+
+                st.rerun()
+
+
+            # =================================================
+            # SUBMIT AUDIO
+            # =================================================
+
+            if submit_audio:
+
+                if audio_value is None:
+
+                    st.warning(
+                        "⚠️ Please record your answer first."
+                    )
+
+                else:
+
+                    with st.spinner(
+                        "🎙️ Converting your speech to text..."
                     ):
 
-                        st.session_state[
-                            "skipped_questions"
-                        ] += 1
+                        transcribed_text, error = (
+                            transcribe_audio(
+                                audio_value
+                            )
+                        )
 
-                        move_to_next_question()
 
-                        st.rerun()
+                    if error:
+
+                        st.error(
+                            f"❌ {error}"
+                        )
+
 
                     else:
 
-                        st.session_state[
-                            "skipped_questions"
-                        ] += 1
+                        st.success(
+                            "✅ Speech converted to text successfully!"
+                        )
+
+
+                        st.subheader(
+                            "📝 Transcribed Answer"
+                        )
+
+
+                        st.info(
+                            transcribed_text
+                        )
+
+
+                        # Save transcription
 
                         st.session_state[
-                            "interview_finished"
-                        ] = True
+                            "transcribed_text"
+                        ] = transcribed_text
 
-                        st.session_state[
-                            "current_question"
-                        ] = None
+
+                        # =====================================
+                        # ANALYZE TRANSCRIBED ANSWER
+                        # =====================================
+
+                        analyze_answer(
+                            transcribed_text,
+                            question
+                        )
+
 
                         st.rerun()
 
 
             st.write("")
 
-
-            # ------------------------------------------------
-            # CHANGE METHOD
-            # ------------------------------------------------
 
             if st.button(
                 "🔄 Change Answer Method",
@@ -1095,6 +1265,7 @@ if (
     st.subheader(
         "💬 Your Submitted Answer"
     )
+
 
     st.info(
         st.session_state["submitted_answer"]
@@ -1144,6 +1315,7 @@ if (
     quality = st.session_state[
         "answer_quality"
     ]
+
 
     label = st.session_state[
         "quality_label"
@@ -1338,7 +1510,7 @@ if st.session_state["interview_finished"]:
 
 
     st.success(
-        "You have completed the interview."
+        "You have completed all interview questions."
     )
 
 
@@ -1346,7 +1518,7 @@ if st.session_state["interview_finished"]:
 
 
     # ========================================================
-    # SUMMARY STATISTICS
+    # SUMMARY
     # ========================================================
 
     st.subheader(
@@ -1358,9 +1530,11 @@ if st.session_state["interview_finished"]:
         "total_questions"
     ]
 
+
     answered = st.session_state[
         "answered_questions"
     ]
+
 
     skipped = st.session_state[
         "skipped_questions"
@@ -1407,9 +1581,11 @@ if st.session_state["interview_finished"]:
         "relevance_scores"
     ]
 
+
     coverage_scores = st.session_state[
         "coverage_scores"
     ]
+
 
     quality_scores = st.session_state[
         "quality_scores"
@@ -1418,10 +1594,10 @@ if st.session_state["interview_finished"]:
 
     if relevance_scores:
 
-        average_relevance = sum(
-            relevance_scores
-        ) / len(
-            relevance_scores
+        average_relevance = (
+            sum(relevance_scores)
+            /
+            len(relevance_scores)
         )
 
     else:
@@ -1431,10 +1607,10 @@ if st.session_state["interview_finished"]:
 
     if coverage_scores:
 
-        average_coverage = sum(
-            coverage_scores
-        ) / len(
-            coverage_scores
+        average_coverage = (
+            sum(coverage_scores)
+            /
+            len(coverage_scores)
         )
 
     else:
@@ -1444,10 +1620,10 @@ if st.session_state["interview_finished"]:
 
     if quality_scores:
 
-        average_quality = sum(
-            quality_scores
-        ) / len(
-            quality_scores
+        average_quality = (
+            sum(quality_scores)
+            /
+            len(quality_scores)
         )
 
     else:
@@ -1518,6 +1694,48 @@ if st.session_state["interview_finished"]:
 
 
     # ========================================================
+    # SCORE COMPARISON CHART
+    # ========================================================
+
+    if (
+        relevance_scores
+        and
+        coverage_scores
+        and
+        quality_scores
+    ):
+
+        st.subheader(
+            "📈 Performance Comparison"
+        )
+
+
+        comparison_data = pd.DataFrame(
+            {
+                "Relevance": relevance_scores,
+
+                "Concept Coverage": coverage_scores,
+
+                "Answer Quality": quality_scores
+            }
+        )
+
+
+        comparison_data.index = range(
+            1,
+            len(comparison_data) + 1
+        )
+
+
+        comparison_data.index.name = "Question"
+
+
+        st.line_chart(
+            comparison_data
+        )
+
+
+    # ========================================================
     # OVERALL PERFORMANCE
     # ========================================================
 
@@ -1532,10 +1750,12 @@ if st.session_state["interview_finished"]:
             "Excellent performance! 🌟"
         )
 
+
         st.write(
             "Your interview answers show strong "
             "concept understanding and relevance."
         )
+
 
     elif average_quality >= 60:
 
@@ -1543,10 +1763,12 @@ if st.session_state["interview_finished"]:
             "Good performance! 👍"
         )
 
+
         st.write(
             "You have a good foundation, but there "
             "are still some areas to improve."
         )
+
 
     elif average_quality >= 40:
 
@@ -1554,16 +1776,19 @@ if st.session_state["interview_finished"]:
             "Average performance. 📚"
         )
 
+
         st.write(
             "Focus on improving concept coverage "
             "and explaining your answers clearly."
         )
+
 
     else:
 
         st.error(
             "Needs improvement. 💪"
         )
+
 
         st.write(
             "Practice the important concepts and "
@@ -1585,4 +1810,4 @@ if st.session_state["interview_finished"]:
 
         reset_interview()
 
-        st.rerun()
+        st.rerun() 
