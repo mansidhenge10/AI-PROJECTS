@@ -426,7 +426,89 @@ Next Question
 Both methods use the **same answer-analysis pipeline** after the answer becomes text.
 
 ---
+# 📄 03. AI Resume Analyzer
 
+An **AI-powered resume analysis application** designed to analyze resumes, extract important information, and compare candidate profiles with job descriptions.
+
+The application uses **NLP, Machine Learning, and Large Language Models** to evaluate resume content, identify relevant skills, detect missing skills, calculate an ATS-style match score, and provide actionable recommendations for improving the resume.
+
+### ✨ Features
+
+* Resume upload support for PDF and DOCX
+* Automatic resume text extraction
+* Resume section detection
+* NLP-based text preprocessing
+* Automatic skill extraction
+* Job description analysis
+* Resume and job description comparison
+* ATS-style resume scoring
+* Matched skill identification
+* Missing skill detection
+* Keyword analysis
+* Resume strengths and weaknesses
+* AI-generated resume feedback
+* Resume improvement suggestions
+* Job-specific recommendations
+
+### 🛠️ Technologies Used
+
+```text
+Python
+Streamlit
+NLP
+NLTK
+Scikit-learn
+TF-IDF
+PyMuPDF
+python-docx
+Machine Learning
+Large Language Models
+Ollama
+Llama 3.2
+```
+
+### 🔄 Project Workflow
+
+```text
+Resume Upload
+      │
+      ▼
+PDF / DOCX Text Extraction
+      │
+      ▼
+Text Preprocessing
+      │
+      ▼
+Resume Section Detection
+      │
+      ▼
+Skill & Keyword Extraction
+      │
+      ▼
+Job Description Analysis
+      │
+      ▼
+Resume ↔ Job Matching
+      │
+      ▼
+ATS-Style Score
+      │
+      ▼
+Matched & Missing Skills
+      │
+      ▼
+LLM Analysis
+      │
+      ▼
+AI Feedback & Recommendations
+```
+
+### 🎯 Goal
+
+The goal of this project is to demonstrate how **NLP, Machine Learning, and Large Language Models can be combined to build an intelligent career-focused application** that analyzes resumes and helps candidates understand how well their profile matches a target job.
+
+The project also demonstrates practical implementation of **document processing, NLP pipelines, skill extraction, text similarity, scoring systems, and LLM-based recommendations**.
+```
 # 🛠️ Technologies Used
 
 ## 🐍 Programming
