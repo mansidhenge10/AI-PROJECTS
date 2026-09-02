@@ -508,7 +508,7 @@ AI Feedback & Recommendations
 The goal of this project is to demonstrate how **NLP, Machine Learning, and Large Language Models can be combined to build an intelligent career-focused application** that analyzes resumes and helps candidates understand how well their profile matches a target job.
 
 The project also demonstrates practical implementation of **document processing, NLP pipelines, skill extraction, text similarity, scoring systems, and LLM-based recommendations**.
-```
+---
 # 🛠️ Technologies Used
 
 ## 🐍 Programming
