@@ -49,6 +49,8 @@ These projects represent my progression from **traditional NLP and Machine Learn
 | -------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
 | 🧑‍💻 01 | **Auto Code Reviewer**            | An AI-powered application that automatically analyzes source code, identifies potential issues, and provides explanations and improvement suggestions. | Python, LLM, Hugging Face, NLP, FastAPI      |
 | 🤖 02    | **AI Interview Mistake Analyzer** | An AI-powered application that analyzes interview answers and provides feedback on mistakes, missing concepts, and areas for improvement.              | Python, NLP, NLTK, TF-IDF, Scikit-learn, LLM |
+| 🤖 03 | **AI Resume Analyzer** | An AI-powered application that analyzes resumes, extracts skills and important information, compares resumes with job descriptions, and provides ATS-style scoring, missing skills, and AI-powered improvement suggestions. | Python, NLP, NLTK, TF-IDF, Scikit-learn, Streamlit, LLM |
+
 
 ---
 
@@ -426,7 +428,88 @@ Next Question
 Both methods use the **same answer-analysis pipeline** after the answer becomes text.
 
 ---
+# 📄 03. AI Resume Analyzer
 
+An **AI-powered resume analysis application** designed to analyze resumes, extract important information, and compare candidate profiles with job descriptions.
+
+The application uses **NLP, Machine Learning, and Large Language Models** to evaluate resume content, identify relevant skills, detect missing skills, calculate an ATS-style match score, and provide actionable recommendations for improving the resume.
+
+### ✨ Features
+
+* Resume upload support for PDF and DOCX
+* Automatic resume text extraction
+* Resume section detection
+* NLP-based text preprocessing
+* Automatic skill extraction
+* Job description analysis
+* Resume and job description comparison
+* ATS-style resume scoring
+* Matched skill identification
+* Missing skill detection
+* Keyword analysis
+* Resume strengths and weaknesses
+* AI-generated resume feedback
+* Resume improvement suggestions
+* Job-specific recommendations
+
+### 🛠️ Technologies Used
+
+```text
+Python
+Streamlit
+NLP
+NLTK
+Scikit-learn
+TF-IDF
+PyMuPDF
+python-docx
+Machine Learning
+Large Language Models
+Ollama
+Llama 3.2
+```
+
+### 🔄 Project Workflow
+
+```text
+Resume Upload
+      │
+      ▼
+PDF / DOCX Text Extraction
+      │
+      ▼
+Text Preprocessing
+      │
+      ▼
+Resume Section Detection
+      │
+      ▼
+Skill & Keyword Extraction
+      │
+      ▼
+Job Description Analysis
+      │
+      ▼
+Resume ↔ Job Matching
+      │
+      ▼
+ATS-Style Score
+      │
+      ▼
+Matched & Missing Skills
+      │
+      ▼
+LLM Analysis
+      │
+      ▼
+AI Feedback & Recommendations
+```
+
+### 🎯 Goal
+
+The goal of this project is to demonstrate how **NLP, Machine Learning, and Large Language Models can be combined to build an intelligent career-focused application** that analyzes resumes and helps candidates understand how well their profile matches a target job.
+
+---
 # 🛠️ Technologies Used
 
 ## 🐍 Programming
