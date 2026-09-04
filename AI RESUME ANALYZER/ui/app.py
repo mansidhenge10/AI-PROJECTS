@@ -24,9 +24,9 @@ from src.resume_evaluator import evaluate_resume
 from src.llm_feedback import generate_feedback
 
 
-# -----------------------------
-# Page Configuration
-# -----------------------------
+# ==================================================
+# PAGE CONFIGURATION
+# ==================================================
 
 st.set_page_config(
     page_title="AI Resume Analyzer",
@@ -35,9 +35,9 @@ st.set_page_config(
 )
 
 
-# -----------------------------
-# Header
-# -----------------------------
+# ==================================================
+# HEADER
+# ==================================================
 
 st.title("📄 AI Resume Analyzer")
 
@@ -49,11 +49,12 @@ st.write(
 st.divider()
 
 
-# -----------------------------
-# Input Section
-# -----------------------------
+# ==================================================
+# INPUT SECTION
+# ==================================================
 
 col1, col2 = st.columns(2)
+
 
 with col1:
 
@@ -78,21 +79,28 @@ with col2:
 
 st.write("")
 
+
 analyze_button = st.button(
     "🔍 ANALYZE RESUME",
     use_container_width=True
 )
 
 
-# -----------------------------
-# Analysis
-# -----------------------------
+# ==================================================
+# ANALYSIS
+# ==================================================
 
 if analyze_button:
 
+    # --------------------------------------------------
+    # INPUT VALIDATION
+    # --------------------------------------------------
+
     if resume_file is None:
 
-        st.warning("⚠️ Please upload your resume.")
+        st.warning(
+            "⚠️ Please upload your resume."
+        )
 
         st.stop()
 
@@ -108,24 +116,36 @@ if analyze_button:
 
     try:
 
-        with st.spinner("Analyzing your resume..."):
+        # ==================================================
+        # RESUME ANALYSIS
+        # ==================================================
+
+        with st.spinner(
+            "Analyzing your resume..."
+        ):
 
             # Resume text
             resume_text = extract_resume_text(
                 resume_file
             )
 
+
             # Resume sections
             sections = detect_sections(
                 resume_text
             )
+
 
             # Resume skills
             resume_skills = extract_skills(
                 resume_text
             )
 
-            # Job analysis
+
+            # ==================================================
+            # JOB DESCRIPTION ANALYSIS
+            # ==================================================
+
             job_result = analyze_job_description(
                 job_description
             )
@@ -134,33 +154,49 @@ if analyze_button:
                 "required_skills"
             ]
 
-            # Skill comparison
+
+            # ==================================================
+            # SKILL COMPARISON
+            # ==================================================
+
             skill_result = compare_skills(
                 resume_skills,
                 job_skills
             )
 
-            # Text similarity
+
+            # ==================================================
+            # TEXT SIMILARITY
+            # ==================================================
+
             similarity = calculate_similarity(
                 resume_text,
                 job_description
             )
 
-            # ATS score
+
+            # ==================================================
+            # ATS SCORE
+            # ==================================================
+
             ats_score = calculate_ats_score(
                 skill_result["match_percentage"],
                 similarity,
                 sections
             )
 
-            # Resume evaluation
+
+            # ==================================================
+            # RESUME EVALUATION
+            # ==================================================
+
             evaluation = evaluate_resume(
                 sections
             )
 
 
         st.success(
-            "Resume analysis completed successfully!"
+            "✅ Resume analysis completed successfully!"
         )
 
 
@@ -170,9 +206,13 @@ if analyze_button:
 
         st.divider()
 
-        st.subheader("🎯 Your Resume Score")
+        st.subheader(
+            "🎯 Your Resume Score"
+        )
+
 
         score_col1, score_col2, score_col3 = st.columns(3)
+
 
         with score_col1:
 
@@ -197,6 +237,8 @@ if analyze_button:
                 f"{similarity}%"
             )
 
+
+        # Score message
 
         if ats_score >= 80:
 
@@ -227,6 +269,7 @@ if analyze_button:
             "❌ What You Are Missing"
         )
 
+
         missing_skills = skill_result[
             "missing_skills"
         ]
@@ -237,6 +280,7 @@ if analyze_button:
             skill_cols = st.columns(
                 min(len(missing_skills), 3)
             )
+
 
             for index, skill in enumerate(
                 missing_skills
@@ -250,6 +294,7 @@ if analyze_button:
                         f"🔴 {skill.title()}"
                     )
 
+
         else:
 
             st.success(
@@ -258,7 +303,7 @@ if analyze_button:
 
 
         # ==================================================
-        # WHAT TO DO
+        # WHAT YOU SHOULD DO
         # ==================================================
 
         st.divider()
@@ -266,6 +311,7 @@ if analyze_button:
         st.subheader(
             "📌 What You Should Do"
         )
+
 
         if missing_skills:
 
@@ -284,6 +330,7 @@ if analyze_button:
                 "project and experience descriptions."
             )
 
+
         else:
 
             st.write(
@@ -300,7 +347,7 @@ if analyze_button:
 
 
         # ==================================================
-        # GOOD THINGS
+        # WHAT IS ALREADY GOOD
         # ==================================================
 
         st.divider()
@@ -309,10 +356,13 @@ if analyze_button:
             "✅ What Is Already Good"
         )
 
+
         matched_skills = skill_result[
             "matched_skills"
         ]
 
+
+        # Matched skills
 
         for skill in matched_skills[:10]:
 
@@ -320,6 +370,8 @@ if analyze_button:
                 f"✓ {skill.title()}"
             )
 
+
+        # Resume sections
 
         if "experience" in sections:
 
@@ -352,6 +404,10 @@ if analyze_button:
             "🤖 AI Quick Feedback"
         )
 
+        st.caption(
+            "Simple suggestions to improve your resume"
+        )
+
 
         with st.spinner(
             "Generating AI feedback..."
@@ -363,7 +419,15 @@ if analyze_button:
             )
 
 
-        st.info(feedback)
+        # Display feedback as bullet points
+
+        for line in feedback.splitlines():
+
+            if line.strip():
+
+                st.markdown(
+                    f"- {line.strip()}"
+                )
 
 
         # ==================================================
@@ -403,21 +467,10 @@ if analyze_button:
 
 
         # ==================================================
-        # DETAILED ANALYSIS
+        # EXTRACTED RESUME TEXT
         # ==================================================
 
         st.divider()
-
-        with st.expander(
-            "🔎 View Detailed AI Analysis"
-        ):
-
-            st.write(feedback)
-
-
-        # ==================================================
-        # EXTRACTED TEXT
-        # ==================================================
 
         with st.expander(
             "📄 View Extracted Resume Text"
@@ -429,6 +482,10 @@ if analyze_button:
                 height=400
             )
 
+
+    # ==================================================
+    # ERROR HANDLING
+    # ==================================================
 
     except Exception as e:
 

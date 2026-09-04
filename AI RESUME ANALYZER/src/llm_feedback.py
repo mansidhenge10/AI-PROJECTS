@@ -3,50 +3,38 @@ import requests
 
 def generate_feedback(resume_text, job_description):
     """
-    Generate short, simple and user-friendly resume feedback.
+    Generate short AI resume feedback.
     """
 
     prompt = f"""
-You are a simple resume assistant.
+Compare this resume with the job description.
 
-Compare the resume with the job description.
-
-RESUME:
+Resume:
 {resume_text}
 
-JOB DESCRIPTION:
+Job Description:
 {job_description}
 
-Give ONLY a very short answer.
+Reply with EXACTLY 4 short lines.
 
-Use EXACTLY this format:
+Format:
+💚 Good: [one short positive sentence]
+⚠️ Add: [2-4 important missing skills]
+📌 Improve: [one simple action]
+⭐ Priority: [one most important action]
 
-💚 Good:
-One short sentence about what is already good.
-
-⚠️ Add:
-Mention the 2 or 3 most important things missing.
-
-📌 Improve:
-Give ONE simple action the candidate should take.
-
-⭐ Priority:
-Give ONE most important thing to do first.
-
-IMPORTANT RULES:
-- Use very simple English.
-- Maximum 4 lines of feedback.
-- Each line must be short.
-- Do not write paragraphs.
-- Do not explain anything.
-- Do not write strengths.
-- Do not write weaknesses.
-- Do not write missing skills as a numbered list.
-- Do not write an overall recommendation.
-- Do not repeat the resume.
-- Do not suggest unrelated skills.
-- If something already exists in the resume, do not say it is missing.
-- Focus on practical actions.
+Rules:
+- Maximum 4 lines
+- Maximum 15 words per line
+- Very simple English
+- No paragraphs
+- No numbering
+- No detailed analysis
+- No candidate name
+- No strengths section
+- No weaknesses section
+- No overall recommendation
+- Do not repeat the resume
 """
 
     response = requests.post(
@@ -56,7 +44,7 @@ IMPORTANT RULES:
             "prompt": prompt,
             "stream": False,
             "options": {
-                "temperature": 0.1
+                "temperature": 0
             }
         }
     )
@@ -65,4 +53,4 @@ IMPORTANT RULES:
 
     result = response.json()
 
-    return result["response"]
+    return result["response"].strip()
