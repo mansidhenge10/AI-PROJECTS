@@ -3,14 +3,13 @@ import requests
 
 def generate_feedback(resume_text, job_description):
     """
-    Generate AI-powered resume feedback using Llama 3.2
-    through Ollama.
+    Generate short, simple and user-friendly resume feedback.
     """
 
     prompt = f"""
-You are an expert AI resume reviewer.
+You are a simple resume assistant.
 
-Analyze the following resume against the job description.
+Compare the resume with the job description.
 
 RESUME:
 {resume_text}
@@ -18,14 +17,36 @@ RESUME:
 JOB DESCRIPTION:
 {job_description}
 
-Provide:
-1. Resume strengths
-2. Weaknesses
-3. Missing skills
-4. Specific improvement suggestions
-5. Overall recommendation
+Give ONLY a very short answer.
 
-Keep the feedback clear and practical.
+Use EXACTLY this format:
+
+💚 Good:
+One short sentence about what is already good.
+
+⚠️ Add:
+Mention the 2 or 3 most important things missing.
+
+📌 Improve:
+Give ONE simple action the candidate should take.
+
+⭐ Priority:
+Give ONE most important thing to do first.
+
+IMPORTANT RULES:
+- Use very simple English.
+- Maximum 4 lines of feedback.
+- Each line must be short.
+- Do not write paragraphs.
+- Do not explain anything.
+- Do not write strengths.
+- Do not write weaknesses.
+- Do not write missing skills as a numbered list.
+- Do not write an overall recommendation.
+- Do not repeat the resume.
+- Do not suggest unrelated skills.
+- If something already exists in the resume, do not say it is missing.
+- Focus on practical actions.
 """
 
     response = requests.post(
@@ -33,7 +54,10 @@ Keep the feedback clear and practical.
         json={
             "model": "llama3.2",
             "prompt": prompt,
-            "stream": False
+            "stream": False,
+            "options": {
+                "temperature": 0.1
+            }
         }
     )
 
