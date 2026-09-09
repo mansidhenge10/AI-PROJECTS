@@ -1,4 +1,4 @@
-# 🤖 AI Engineering Projects
+# 🤖 AI Engineering 
 
 ### A collection of practical AI, Machine Learning, NLP, Generative AI, and LLM-based projects built to develop real-world AI Engineering skills.
 
