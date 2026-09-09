@@ -34,7 +34,7 @@ from src.similarity_analyzer import calculate_similarity
 from src.ats_scorer import calculate_ats_score
 from src.resume_evaluator import evaluate_resume
 from src.llm_feedback import generate_feedback
-
+from src.resume_template import show_ats_resume_template
 
 # ==================================================
 # PAGE CONFIGURATION
