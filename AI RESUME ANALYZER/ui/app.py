@@ -34,7 +34,9 @@ from src.similarity_analyzer import calculate_similarity
 from src.ats_scorer import calculate_ats_score
 from src.resume_evaluator import evaluate_resume
 from src.llm_feedback import generate_feedback
+
 from src.resume_template import show_ats_resume_template
+
 
 # ==================================================
 # PAGE CONFIGURATION
@@ -57,8 +59,14 @@ if "analysis_complete" not in st.session_state:
 if "tailor_resume" not in st.session_state:
     st.session_state["tailor_resume"] = False
 
+if "show_resume_editor" not in st.session_state:
+    st.session_state["show_resume_editor"] = False
+
 if "analysis_data" not in st.session_state:
     st.session_state["analysis_data"] = {}
+
+if "resume_generated" not in st.session_state:
+    st.session_state["resume_generated"] = False
 
 
 # ==================================================
@@ -288,11 +296,19 @@ if analyze_button:
 
 
         # ==================================================
-        # RESET TAILOR STATE
+        # RESET TAILOR / EDITOR STATE
         # ==================================================
 
         st.session_state[
             "tailor_resume"
+        ] = False
+
+        st.session_state[
+            "show_resume_editor"
+        ] = False
+
+        st.session_state[
+            "resume_generated"
         ] = False
 
 
@@ -460,9 +476,6 @@ if st.session_state["analysis_complete"]:
     # TAILOR RESUME
     # ==================================================
 
-    # The Tailor option appears ONLY when the
-    # resume is not considered strong.
-
     if resume_status != "strong":
 
         st.divider()
@@ -486,9 +499,15 @@ if st.session_state["analysis_complete"]:
                 "tailor_resume"
             ] = True
 
+            st.session_state[
+                "show_resume_editor"
+            ] = True
+
+            st.rerun()
+
 
     # ==================================================
-    # TAILOR RESULTS
+    # TAILORING RESULTS
     # ==================================================
 
     if (
@@ -547,7 +566,7 @@ if st.session_state["analysis_complete"]:
 
                 st.write(
                     f"**{skill.title()}** → "
-                    f"Skills / Technical Skills section"
+                    "Skills / Technical Skills section"
                 )
 
         else:
@@ -578,8 +597,8 @@ if st.session_state["analysis_complete"]:
 
                 st.write(
                     f"📌 **{skill.title()}** → "
-                    f"Add truthful evidence of using this "
-                    f"skill in a relevant project."
+                    "Add truthful evidence of using this "
+                    "skill in a relevant project."
                 )
 
         else:
@@ -610,7 +629,7 @@ if st.session_state["analysis_complete"]:
 
                 st.code(
                     f"Used {skill.title()} to build "
-                    f"and improve a relevant AI/ML project.",
+                    "and improve a relevant AI/ML project.",
                     language="text"
                 )
 
@@ -635,6 +654,22 @@ if st.session_state["analysis_complete"]:
         st.caption(
             "⚠️ Only add skills, tools, certifications, "
             "or experience that you genuinely have."
+        )
+
+
+    # ==================================================
+    # ATS RESUME EDITOR
+    # ==================================================
+
+    if st.session_state.get(
+        "show_resume_editor",
+        False
+    ):
+
+        show_ats_resume_template(
+            resume_text=resume_text,
+            resume_skills=matched_skills,
+            missing_skills=missing_skills
         )
 
 
@@ -830,15 +865,10 @@ if st.session_state["analysis_complete"]:
     important_sections = [
 
         "summary",
-
         "skills",
-
         "education",
-
         "experience",
-
         "projects",
-
         "certifications"
 
     ]

@@ -1,178 +1,399 @@
 import streamlit as st
 
 
-def show_ats_resume_template():
+def show_ats_resume_template(
+    resume_text="",
+    resume_skills=None,
+    missing_skills=None
+):
+
+    # ==================================================
+    # DEFAULT VALUES
+    # ==================================================
+
+    if resume_skills is None:
+        resume_skills = []
+
+    if missing_skills is None:
+        missing_skills = []
+
+
+    # ==================================================
+    # SESSION STATE
+    # ==================================================
+
+    if "resume_generated" not in st.session_state:
+
+        st.session_state[
+            "resume_generated"
+        ] = False
+
+
+    # ==================================================
+    # ATS RESUME EDITOR
+    # ==================================================
 
     st.divider()
 
-    st.header("📄 ATS-Friendly Resume Builder")
+    st.header(
+        "📄 ATS-Friendly Resume Editor"
+    )
 
     st.info(
-        "Create a clean, professional, ATS-friendly resume "
-        "using the information from your analyzed resume."
+        "Create a clean, professional and ATS-friendly "
+        "resume for the selected job."
     )
+
+
+    # ==================================================
+    # ATS TIPS
+    # ==================================================
+
+    with st.expander(
+        "💡 ATS Resume Tips"
+    ):
+
+        st.write(
+            "✓ Use a simple single-column layout."
+        )
+
+        st.write(
+            "✓ Use standard section headings."
+        )
+
+        st.write(
+            "✓ Include relevant job keywords."
+        )
+
+        st.write(
+            "✓ Avoid excessive graphics and tables."
+        )
+
+        st.write(
+            "✓ Use measurable achievements."
+        )
+
+        st.write(
+            "✓ Only mention skills you genuinely have."
+        )
+
 
     # ==================================================
     # PERSONAL INFORMATION
     # ==================================================
 
-    st.subheader("👤 Personal Information")
+    st.subheader(
+        "👤 Personal Information"
+    )
+
 
     col1, col2 = st.columns(2)
 
+
     with col1:
+
         name = st.text_input(
             "Full Name",
-            placeholder="e.g. Mansi Dhenge"
+            placeholder="e.g. Mansi Dhenge",
+            key="resume_name"
         )
+
 
         email = st.text_input(
             "Email",
-            placeholder="e.g. yourname@gmail.com"
+            placeholder="e.g. yourname@gmail.com",
+            key="resume_email"
         )
+
 
         phone = st.text_input(
             "Phone",
-            placeholder="e.g. +91 XXXXX XXXXX"
+            placeholder="e.g. +91 XXXXX XXXXX",
+            key="resume_phone"
         )
 
+
     with col2:
+
         location = st.text_input(
             "Location",
-            placeholder="e.g. Nagpur, Maharashtra"
+            placeholder="e.g. Nagpur, Maharashtra",
+            key="resume_location"
         )
+
 
         linkedin = st.text_input(
             "LinkedIn",
-            placeholder="LinkedIn profile"
+            placeholder="https://linkedin.com/in/username",
+            key="resume_linkedin"
         )
+
 
         github = st.text_input(
             "GitHub",
-            placeholder="GitHub profile"
+            placeholder="https://github.com/username",
+            key="resume_github"
         )
+
 
     # ==================================================
     # PROFESSIONAL SUMMARY
     # ==================================================
 
-    st.subheader("📝 Professional Summary")
+    st.subheader(
+        "📝 Professional Summary"
+    )
+
 
     summary = st.text_area(
-        "Professional Summary",
-        height=120,
+        "Write your professional summary",
+        height=130,
         placeholder=(
-            "Write a 2–4 line professional summary "
-            "tailored to the job."
-        )
+            "AI Engineer with experience in Python, "
+            "Machine Learning, NLP and Generative AI..."
+        ),
+        key="resume_summary"
     )
 
+
     # ==================================================
-    # SKILLS
+    # TECHNICAL SKILLS
     # ==================================================
 
-    st.subheader("🛠️ Technical Skills")
+    st.subheader(
+        "🛠️ Technical Skills"
+    )
+
+
+    default_skills = ", ".join(
+        skill.title()
+        for skill in resume_skills
+    )
+
 
     skills = st.text_area(
-        "Skills",
-        height=100,
+        "Technical Skills",
+        value=default_skills,
+        height=120,
         placeholder=(
-            "Python, Machine Learning, NLP, SQL, "
-            "TensorFlow, PyTorch, FastAPI..."
-        )
+            "Python, Machine Learning, NLP, "
+            "SQL, PyTorch, TensorFlow..."
+        ),
+        key="resume_skills"
     )
+
 
     # ==================================================
     # EXPERIENCE
     # ==================================================
 
-    st.subheader("💼 Work Experience")
+    st.subheader(
+        "💼 Work Experience"
+    )
+
 
     experience = st.text_area(
-        "Experience",
-        height=180,
+        "Work Experience",
+        height=220,
         placeholder=(
-            "Job Title | Company | Location | Dates\n"
-            "• Achievement or responsibility\n"
-            "• Achievement or responsibility\n"
-            "• Technologies used"
-        )
+            "AI Engineer Intern | Company Name | Location\n"
+            "Jan 2025 – Jun 2025\n\n"
+            "• Developed machine learning solutions using Python.\n"
+            "• Built REST APIs using FastAPI.\n"
+            "• Improved application performance by X%."
+        ),
+        key="resume_experience"
     )
+
 
     # ==================================================
     # PROJECTS
     # ==================================================
 
-    st.subheader("🚀 Projects")
+    st.subheader(
+        "🚀 Projects"
+    )
+
 
     projects = st.text_area(
         "Projects",
-        height=200,
+        height=250,
         placeholder=(
-            "Project Name\n"
-            "• What you built\n"
-            "• Technologies used\n"
-            "• Result / achievement"
-        )
+            "AI Interview Mistake Analyzer\n"
+            "Python | NLP | Machine Learning | Streamlit\n\n"
+            "• Developed an AI-powered interview analysis system.\n"
+            "• Used NLP techniques to analyze candidate answers.\n"
+            "• Implemented TF-IDF based concept extraction.\n\n"
+            "Brain Tumor Detection\n"
+            "Python | Deep Learning | CNN\n\n"
+            "• Built an image classification model for brain tumor detection."
+        ),
+        key="resume_projects"
     )
+
 
     # ==================================================
     # EDUCATION
     # ==================================================
 
-    st.subheader("🎓 Education")
+    st.subheader(
+        "🎓 Education"
+    )
+
 
     education = st.text_area(
         "Education",
-        height=120,
+        height=130,
         placeholder=(
-            "Degree | University / College | Year\n"
-            "MCA | XYZ University | 2025"
-        )
+            "Master of Computer Applications (MCA)\n"
+            "University / College Name\n"
+            "2025"
+        ),
+        key="resume_education"
     )
+
 
     # ==================================================
     # CERTIFICATIONS
     # ==================================================
 
-    st.subheader("🏆 Certifications")
+    st.subheader(
+        "🏆 Certifications"
+    )
+
 
     certifications = st.text_area(
         "Certifications",
-        height=100,
+        height=130,
         placeholder=(
-            "Machine Learning Certificate\n"
-            "Generative AI Certificate"
-        )
+            "Machine Learning Certificate — Platform — 2026\n"
+            "Generative AI Certificate — Platform — 2026"
+        ),
+        key="resume_certifications"
     )
 
+
     # ==================================================
-    # GENERATE BUTTON
+    # ACHIEVEMENTS
     # ==================================================
 
-    if st.button(
+    st.subheader(
+        "🏅 Achievements"
+    )
+
+
+    achievements = st.text_area(
+        "Achievements",
+        height=120,
+        placeholder=(
+            "• Achievement or award\n"
+            "• Competition / Hackathon\n"
+            "• Academic achievement"
+        ),
+        key="resume_achievements"
+    )
+
+
+    # ==================================================
+    # GENERATE ATS RESUME
+    # ==================================================
+
+    st.divider()
+
+
+    generate_button = st.button(
         "📄 GENERATE ATS RESUME",
         use_container_width=True
-    ):
+    )
 
-        st.session_state["generated_resume"] = {
+
+    if generate_button:
+
+        # --------------------------------------------------
+        # VALIDATION
+        # --------------------------------------------------
+
+        if not name.strip():
+
+            st.warning(
+                "⚠️ Please enter your full name."
+            )
+
+            st.stop()
+
+
+        if not email.strip():
+
+            st.warning(
+                "⚠️ Please enter your email."
+            )
+
+            st.stop()
+
+
+        if not summary.strip():
+
+            st.warning(
+                "⚠️ Please enter a professional summary."
+            )
+
+            st.stop()
+
+
+        if not skills.strip():
+
+            st.warning(
+                "⚠️ Please enter your technical skills."
+            )
+
+            st.stop()
+
+
+        # --------------------------------------------------
+        # SAVE RESUME
+        # --------------------------------------------------
+
+        st.session_state[
+            "generated_resume"
+        ] = {
 
             "name": name,
+
             "email": email,
+
             "phone": phone,
+
             "location": location,
+
             "linkedin": linkedin,
+
             "github": github,
 
             "summary": summary,
+
             "skills": skills,
+
             "experience": experience,
+
             "projects": projects,
+
             "education": education,
-            "certifications": certifications
+
+            "certifications": certifications,
+
+            "achievements": achievements
         }
 
-        st.session_state["resume_generated"] = True
+
+        st.session_state[
+            "resume_generated"
+        ] = True
+
+
+        st.success(
+            "✅ ATS-friendly resume generated!"
+        )
+
 
     # ==================================================
     # RESUME PREVIEW
@@ -187,43 +408,166 @@ def show_ats_resume_template():
             "generated_resume"
         ]
 
+
         st.divider()
 
-        st.subheader("👀 Resume Preview")
+        st.header(
+            "👀 Resume Preview"
+        )
+
+
+        # ==================================================
+        # PREVIEW
+        # ==================================================
 
         st.markdown(
             f"""
-            # {resume["name"]}
+# {resume["name"]}
 
-            **{resume["email"]} | {resume["phone"]} | 
-            {resume["location"]}**
+**{resume["email"]}**  
+**{resume["phone"]}**  
+**{resume["location"]}**
 
-            {resume["linkedin"]} | {resume["github"]}
+{resume["linkedin"]}  
+{resume["github"]}
 
-            ---
+---
 
-            ## PROFESSIONAL SUMMARY
+## PROFESSIONAL SUMMARY
 
-            {resume["summary"]}
+{resume["summary"]}
 
-            ## TECHNICAL SKILLS
+---
 
-            {resume["skills"]}
+## TECHNICAL SKILLS
 
-            ## WORK EXPERIENCE
+{resume["skills"]}
 
-            {resume["experience"]}
+---
 
-            ## PROJECTS
+## WORK EXPERIENCE
 
-            {resume["projects"]}
+{resume["experience"]}
 
-            ## EDUCATION
+---
 
-            {resume["education"]}
+## PROJECTS
 
-            ## CERTIFICATIONS
+{resume["projects"]}
 
-            {resume["certifications"]}
-            """
+---
+
+## EDUCATION
+
+{resume["education"]}
+
+---
+
+## CERTIFICATIONS
+
+{resume["certifications"]}
+
+---
+
+## ACHIEVEMENTS
+
+{resume["achievements"]}
+"""
+        )
+
+
+        # ==================================================
+        # ATS CHECK
+        # ==================================================
+
+        st.divider()
+
+        st.subheader(
+            "🤖 ATS Resume Check"
+        )
+
+
+        ats_checks = {
+
+            "Name is present":
+                bool(resume["name"].strip()),
+
+            "Email is present":
+                bool(resume["email"].strip()),
+
+            "Professional Summary":
+                bool(resume["summary"].strip()),
+
+            "Technical Skills":
+                bool(resume["skills"].strip()),
+
+            "Work Experience":
+                bool(resume["experience"].strip()),
+
+            "Projects":
+                bool(resume["projects"].strip()),
+
+            "Education":
+                bool(resume["education"].strip()),
+
+            "Certifications":
+                bool(resume["certifications"].strip())
+        }
+
+
+        for check, status in ats_checks.items():
+
+            if status:
+
+                st.write(
+                    f"✅ {check}"
+                )
+
+            else:
+
+                st.write(
+                    f"⚠️ {check}"
+                )
+
+
+        # ==================================================
+        # TEXT DOWNLOAD
+        # ==================================================
+
+        resume_text_output = f"""
+{resume["name"]}
+
+{resume["email"]} | {resume["phone"]} | {resume["location"]}
+{resume["linkedin"]}
+{resume["github"]}
+
+PROFESSIONAL SUMMARY
+{resume["summary"]}
+
+TECHNICAL SKILLS
+{resume["skills"]}
+
+WORK EXPERIENCE
+{resume["experience"]}
+
+PROJECTS
+{resume["projects"]}
+
+EDUCATION
+{resume["education"]}
+
+CERTIFICATIONS
+{resume["certifications"]}
+
+ACHIEVEMENTS
+{resume["achievements"]}
+"""
+
+
+        st.download_button(
+            label="📥 DOWNLOAD RESUME",
+            data=resume_text_output,
+            file_name="ATS_Resume.txt",
+            mime="text/plain",
+            use_container_width=True
         )
