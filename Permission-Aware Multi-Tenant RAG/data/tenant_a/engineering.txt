@@ -1,0 +1,10 @@
+Engineering Team Documentation
+
+Company: TechCorp
+Tenant: Tenant A
+
+The engineering team uses Python, FastAPI and Docker for backend development.
+
+All production code must be reviewed before deployment.
+
+The engineering team is responsible for API development, testing and deployment.

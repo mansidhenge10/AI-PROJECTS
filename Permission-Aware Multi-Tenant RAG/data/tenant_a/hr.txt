@@ -1,0 +1,10 @@
+Human Resources Documentation
+
+Company: TechCorp
+Tenant: Tenant A
+
+Employees receive 24 annual paid leaves.
+
+Employees must submit leave requests through the HR portal.
+
+The HR department handles employee onboarding and company policies.

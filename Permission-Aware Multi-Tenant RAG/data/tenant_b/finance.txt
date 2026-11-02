@@ -1,0 +1,8 @@
+Finance Documentation
+
+Company: FinServe
+Tenant: Tenant B
+
+The finance team manages budgets, invoices and financial reports.
+
+Monthly financial reports must be reviewed by the finance manager.
