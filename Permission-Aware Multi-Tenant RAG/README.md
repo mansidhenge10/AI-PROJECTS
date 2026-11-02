@@ -1,4 +1,4 @@
-# Permission-Aware Multi-Tenant RAG API
+# PERMISSION-AWARE MULTI-TENANT RAG
 
 A secure Retrieval-Augmented Generation (RAG) application built with Python, FastAPI, ChromaDB, Streamlit, and Ollama. It implements tenant-level and role-based document access control to ensure users can retrieve information only from documents they are authorized to access.
 
