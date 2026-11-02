@@ -50,6 +50,7 @@ These projects represent my progression from **traditional NLP and Machine Learn
 | 🧑‍💻 01 | **Auto Code Reviewer**            | An AI-powered application that automatically analyzes source code, identifies potential issues, and provides explanations and improvement suggestions. | Python, LLM, Hugging Face, NLP, FastAPI      |
 | 🤖 02    | **AI Interview Mistake Analyzer** | An AI-powered application that analyzes interview answers and provides feedback on mistakes, missing concepts, and areas for improvement.              | Python, NLP, NLTK, TF-IDF, Scikit-learn, LLM |
 | 🤖 03 | **AI Resume Analyzer** | An AI-powered application that analyzes resumes, extracts skills and important information, compares resumes with job descriptions, and provides ATS-style scoring, missing skills, and AI-powered improvement suggestions. | Python, NLP, NLTK, TF-IDF, Scikit-learn, Streamlit, LLM |
+| 🧑‍💻 04 | Permission-Aware Multi-Tenant RAG | A secure Retrieval-Augmented Generation application that retrieves information while enforcing tenant-level and role-based access permissions. | Python, FastAPI, ChromaDB, LangChain, Ollama, Llama 3.2, Hugging Face |
 
 
 ---
