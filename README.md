@@ -505,7 +505,100 @@ LLM Analysis
       ▼
 AI Feedback & Recommendations
 ```
+## 🔐 04. Permission-Aware Multi-Tenant RAG
 
+A Retrieval-Augmented Generation (RAG) application designed to provide secure, context-aware responses while enforcing tenant-based and role-based access control.
+
+The application allows multiple tenants to store and retrieve their own documents. Before retrieving information, the system applies access permissions based on the user's tenant and role.
+
+This helps prevent users from accessing documents that they are not authorized to view.
+
+### ✨ Features
+
+- Multi-tenant document management
+- Tenant-based data isolation
+- Role-based access control
+- Permission-aware document retrieval
+- Document ingestion and processing
+- Vector embeddings for semantic search
+- ChromaDB vector database integration
+- Context-aware information retrieval
+- LLM-powered answer generation
+- Ollama local LLM integration
+- Audit logging for application activities
+- FastAPI-based backend
+
+### 🛠️ Technologies Used
+
+- Python
+- FastAPI
+- ChromaDB
+- LangChain
+- Ollama
+- Llama 3.2
+- Hugging Face
+- Sentence Transformers
+- Vector Embeddings
+- Retrieval-Augmented Generation (RAG)
+- Role-Based Access Control (RBAC)
+
+### 🔄 Project Workflow
+
+```text
+User Login
+    │
+    ▼
+User Identity & Role
+    │
+    ▼
+Tenant Identification
+    │
+    ▼
+Access Permission Validation
+    │
+    ▼
+User Query
+    │
+    ▼
+Permission-Based Retrieval Filter
+    │
+    ▼
+ChromaDB Vector Search
+    │
+    ▼
+Relevant Document Retrieval
+    │
+    ▼
+Context Generation
+    │
+    ▼
+Ollama - Llama 3.2
+    │
+    ▼
+AI-Generated Response
+    │
+    ▼
+Audit Logging
+```
+
+### 🔒 Security & Access Control
+
+The application implements access restrictions using:
+
+- Tenant-level document isolation
+- Role-based document permissions
+- Access filtering before document retrieval
+- Controlled retrieval of authorized information
+
+This ensures that retrieved context is restricted according to the configured tenant and role permissions.
+
+### 🎯 Project Goal
+
+The goal of this project is to demonstrate how Retrieval-Augmented Generation can be combined with multi-tenant architecture and access-control mechanisms to build more secure AI-powered applications.
+
+It demonstrates practical concepts in RAG architecture, vector databases, semantic search, LLM integration, API development, and permission-aware information retrieval.
+
+---
 ### 🎯 Goal
 
 The goal of this project is to demonstrate how **NLP, Machine Learning, and Large Language Models can be combined to build an intelligent career-focused application** that analyzes resumes and helps candidates understand how well their profile matches a target job.
