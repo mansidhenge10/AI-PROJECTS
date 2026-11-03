@@ -1004,7 +1004,309 @@ AI Application Development
    ▼
 AI Engineering
 ```
+## ⚡ 05. Semantic Caching & Cost-Aware Routing
 
+An intelligent LLM optimization application designed to reduce redundant Large Language Model (LLM) calls, improve response efficiency, and optimize model selection using semantic caching and cost-aware routing.
+
+The application uses semantic similarity to identify previously answered queries and retrieve cached responses instead of generating new responses every time. It also uses an intelligent model router to select an appropriate language model based on query complexity.
+
+The system integrates local LLMs through Ollama and provides performance monitoring through a dashboard to track cache hits, token usage, response latency, and request metrics.
+
+### ✨ Features
+
+**🧠 Semantic Caching**
+- Semantic similarity-based query matching
+- Persistent cache storage using SQLite
+- Sentence Transformer embeddings
+- Similarity threshold-based cache validation
+- Cache hit and cache miss detection
+- Reuse of previously generated responses
+- Reduced redundant LLM calls
+
+**🎯 Cost-Aware Model Routing**
+- Intelligent model selection
+- Query complexity-based routing
+- Lightweight model selection for simple queries
+- Advanced model selection for complex queries
+- Small model routing using Llama 3.2
+- Advanced model routing using Qwen 2.5
+- Optimized LLM request handling
+
+**⚡ Performance Optimization**
+- Reduced unnecessary model inference
+- Faster responses for cached queries
+- Semantic query matching
+- Intent-aware cache validation
+- Efficient request processing
+
+**📊 Performance Monitoring Dashboard**
+
+The application provides a Streamlit dashboard to monitor:
+
+- Total requests
+- Cache hits
+- Cache hit rate
+- Cache misses
+- Average response latency
+- Prompt token usage
+- Completion token usage
+- Total token consumption
+- Request performance metrics
+
+**🔍 Request Analysis**
+- Query processing
+- Cache lookup
+- Semantic similarity calculation
+- Model routing decisions
+- LLM response generation
+- Cache storage
+- Request metrics tracking
+
+### 🛠️ Technologies Used
+
+**🐍 Programming**
+- Python 3
+
+**🧠 Semantic Search & Embeddings**
+- Sentence Transformers
+- all-MiniLM-L6-v2
+- Semantic Similarity
+- Vector Embeddings
+
+**🤖 Generative AI**
+- Large Language Models (LLMs)
+- Ollama
+- Llama 3.2
+- Qwen 2.5
+- Prompt Engineering
+
+**🌐 Backend & API**
+- FastAPI
+- REST API
+- Uvicorn
+
+**🗄️ Database & Storage**
+- SQLite
+- Persistent Semantic Cache
+
+**📊 Dashboard & Monitoring**
+- Streamlit
+- Performance Metrics
+- Token Usage Tracking
+- Latency Monitoring
+
+**🧪 Testing**
+- Pytest
+- API Testing
+- Cache Testing
+- Model Router Testing
+- Metrics Testing
+
+### 🔄 Complete Project Workflow
+
+```text
+             User Query
+                  │
+                  ▼
+          Query Preprocessing
+                  │
+                  ▼
+          Semantic Cache Lookup
+                  │
+                  ▼
+        Generate Query Embedding
+                  │
+                  ▼
+       Calculate Semantic Similarity
+                  │
+                  ▼
+          Cache Match Found?
+                  │
+           ┌──────┴──────┐
+           │             │
+          YES            NO
+           │             │
+           ▼             ▼
+     Retrieve Cached   Query Complexity
+        Response          Analysis
+           │             │
+           │             ▼
+           │       Intelligent Model
+           │            Router
+           │             │
+           │       ┌─────┴─────┐
+           │       │           │
+           │       ▼           ▼
+           │   Small Model  Advanced Model
+           │   Llama 3.2    Qwen 2.5
+           │       │           │
+           │       └─────┬─────┘
+           │             │
+           │             ▼
+           │       LLM Processing
+           │             │
+           │             ▼
+           │       Generate Response
+           │             │
+           │             ▼
+           │       Store in Semantic
+           │            Cache
+           │             │
+           └──────┬──────┘
+                  │
+                  ▼
+           Return Response
+                  │
+                  ▼
+         Record Request Metrics
+                  │
+                  ▼
+       Update Monitoring Dashboard
+```
+
+### 🧠 Semantic Caching Pipeline
+
+The project uses semantic similarity to identify queries with similar meanings, even when their wording is different.
+
+```text
+          Incoming User Query
+                  │
+                  ▼
+          Text Preprocessing
+                  │
+                  ▼
+       Sentence Transformer Model
+             (all-MiniLM-L6-v2)
+                  │
+                  ▼
+           Query Embedding
+                  │
+                  ▼
+        Compare with Cached
+             Embeddings
+                  │
+                  ▼
+        Similarity Calculation
+                  │
+                  ▼
+         Similarity Threshold
+                  │
+           ┌──────┴──────┐
+           │             │
+           ▼             ▼
+       Cache Hit      Cache Miss
+           │             │
+           ▼             ▼
+     Return Stored    Generate New
+       Response         Response
+                         │
+                         ▼
+                    Store Result
+                         │
+                         ▼
+                    Return Answer
+```
+
+The application uses a configurable semantic similarity threshold of 0.90 to validate cache matches. Intent-aware validation helps avoid reusing responses for queries that are semantically similar but require different answers.
+
+### 🎯 Cost-Aware Model Routing
+
+The model router selects a suitable LLM based on the complexity of the incoming query.
+
+**Small Model Route**
+
+- Model: Llama 3.2
+- Used for simple queries
+- Suitable for straightforward questions
+- Helps avoid unnecessary advanced model calls
+
+**Advanced Model Route**
+
+- Model: Qwen 2.5 (3B)
+- Used for more complex queries
+- Suitable for queries requiring more detailed reasoning
+- Provides an advanced processing route
+
+### 📊 Monitoring & Performance Metrics
+
+The dashboard helps analyze application performance through:
+
+**Cache Hit Rate**
+
+Measures the percentage of requests answered using previously cached responses.
+
+**Average Latency**
+
+Measures the average time required to process requests and generate responses.
+
+**Token Usage**
+
+Tracks prompt tokens, completion tokens, and total token consumption.
+
+**Request Metrics**
+
+Records request counts, cache hits, cache misses, latency, and model usage.
+
+Since the application uses local Ollama models, the actual local API inference cost is zero. The cost-aware routing logic focuses on reducing unnecessary model calls and optimizing resource usage rather than reporting paid API savings.
+
+### 🔄 Request Processing Architecture
+
+**Cache Hit Scenario**
+
+```text
+User Query
+    ↓
+Semantic Cache Lookup
+    ↓
+Similarity Match
+    ↓
+Retrieve Cached Response
+    ↓
+Return Response
+```
+
+**Cache Miss Scenario**
+
+```text
+User Query
+    ↓
+Semantic Cache Lookup
+    ↓
+No Matching Response
+    ↓
+Query Complexity Analysis
+    ↓
+Model Router
+    ↓
+Select Appropriate LLM
+    ↓
+Ollama Model Processing
+    ↓
+Generate Response
+    ↓
+Store Response in Cache
+    ↓
+Return Response
+```
+
+### 🧪 Testing
+
+The project includes automated tests using Pytest to validate:
+
+- Semantic cache functionality
+- Cache hit and cache miss handling
+- API endpoints
+- Model routing decisions
+- Performance metrics
+- Request processing
+
+**Test Result:** 10 tests passed successfully.
+
+### 🎯 Project Goal
+
+The goal of this project is to demonstrate how semantic caching, sentence embeddings, intelligent model routing, and performance monitoring can be combined to build efficient and optimized LLM-powered applications.
+
+It demonstrates practical concepts in semantic search, vector embeddings, Generative AI, model routing, API development, database management, and LLM performance optimization.
 ---
 
 
