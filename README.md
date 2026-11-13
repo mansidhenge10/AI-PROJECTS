@@ -52,6 +52,7 @@ These projects represent my progression from **traditional NLP and Machine Learn
 | 🤖 03 | **AI Resume Analyzer** | An AI-powered application that analyzes resumes, extracts skills and important information, compares resumes with job descriptions, and provides ATS-style scoring, missing skills, and AI-powered improvement suggestions. | Python, NLP, NLTK, TF-IDF, Scikit-learn, Streamlit, LLM |
 | 🧑‍💻 04 | Permission-Aware Multi-Tenant RAG | A secure Retrieval-Augmented Generation application that retrieves information while enforcing tenant-level and role-based access permissions. | Python, FastAPI, ChromaDB, LangChain, Ollama, Llama 3.2, Hugging Face |
 | ⚡ 05 | Semantic Caching & Cost-Aware Routing | An intelligent LLM optimization system that uses semantic caching and cost-aware model routing to reduce redundant model calls, improve response efficiency, and monitor application performance. | Python, FastAPI, Streamlit, SQLite, Sentence Transformers, Ollama, Llama 3.2, Qwen 2.5 |
+| ⚡ 06 | Engineering Intelligence Hub | An AI-powered engineering knowledge assistant that uses Retrieval-Augmented Generation (RAG) to ingest technical documents, perform semantic search, retrieve relevant information, and generate context-aware answers using LLMs. | Python, LangChain, ChromaDB, Sentence Transformers, Ollama, Llama 3.2, PyPDF |
 
 ---
 
