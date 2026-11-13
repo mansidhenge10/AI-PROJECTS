@@ -1307,7 +1307,7 @@ The project includes automated tests using Pytest to validate:
 
 The goal of this project is to demonstrate how semantic caching, sentence embeddings, intelligent model routing, and performance monitoring can be combined to build efficient and optimized LLM-powered applications.
 It demonstrates practical concepts in semantic search, vector embeddings, Generative AI, model routing, API development, database management, and LLM performance optimization.
-```
+
 ---
 # **🧠 06. Engineering Intelligence Hub**
 
