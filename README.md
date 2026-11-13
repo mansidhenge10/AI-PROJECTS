@@ -1309,7 +1309,90 @@ The goal of this project is to demonstrate how semantic caching, sentence embedd
 
 It demonstrates practical concepts in semantic search, vector embeddings, Generative AI, model routing, API development, database management, and LLM performance optimization.
 ---
+# **🧠 06. Engineering Intelligence Hub**
 
+An **AI-powered engineering knowledge assistant** designed to help developers search technical documents and get context-aware answers using Retrieval-Augmented Generation (RAG).
+
+The application processes engineering documents, converts their content into vector embeddings, stores them in a vector database, and uses Large Language Models to answer technical questions based on retrieved information.
+
+### **✨ Features**
+
+- Upload and process PDF, TXT, and Markdown documents
+- Automatic text extraction
+- Text chunking with overlapping segments
+- Semantic embedding generation
+- Vector storage using ChromaDB
+- Semantic search and relevant document retrieval
+- AI-powered question answering
+- Context-aware response generation
+- Source filename identification
+- Local LLM integration using Ollama
+- Reduced hallucinations through context-based answering
+
+### **🛠️ Technologies Used**
+
+```
+Python
+Retrieval-Augmented Generation (RAG)
+LangChain
+ChromaDB
+Sentence Transformers
+all-MiniLM-L6-v2
+Ollama
+Llama 3.2
+PyPDF
+Vector Embeddings
+Semantic Search
+```
+
+### **🔄 Project Workflow**
+
+```
+Engineering Documents
+        │
+        ▼
+Document Loading
+        │
+        ▼
+Text Extraction
+        │
+        ▼
+Text Splitting
+        │
+        ▼
+Embedding Generation
+        │
+        ▼
+ChromaDB Vector Storage
+        │
+        ▼
+Developer Question
+        │
+        ▼
+Query Embedding
+        │
+        ▼
+Semantic Search
+        │
+        ▼
+Relevant Chunk Retrieval
+        │
+        ▼
+Context Construction
+        │
+        ▼
+Ollama - Llama 3.2
+        │
+        ▼
+AI-Generated Answer
+        │
+        ▼
+Answer with Source Filenames
+```
+
+### **🎯 Goal**
+
+The goal of this project is to demonstrate how **Retrieval-Augmented Generation, vector databases, semantic search, and Large Language Models can be integrated** to build an intelligent engineering knowledge assistant that makes technical information searchable, accessible, and easier for developers to understand.
 
 ---
 
